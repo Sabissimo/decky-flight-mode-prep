@@ -18,10 +18,14 @@ One tap before you leave, and Flight Mode Prep tells you:
 
 ## Installation
 
-Not on the Decky store yet. To sideload:
+Not on the Decky store yet. To install:
 
-1. Enable Developer Mode in Decky settings
-2. Build the plugin (see below) and copy the folder to `homebrew/plugins/` on your Deck
+1. In Decky settings, enable **Developer mode**
+2. In the **Developer** tab, choose **Install Plugin from URL** and paste:
+
+   ```
+   https://github.com/Sabissimo/decky-flight-mode-prep/releases/latest/download/decky-flight-mode-prep.zip
+   ```
 
 ## Roadmap
 
