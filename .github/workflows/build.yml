@@ -1,0 +1,49 @@
+name: Build plugin
+
+on:
+  push:
+    branches: [master]
+    tags: ["v*"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Check backend syntax
+        run: python3 -m py_compile main.py
+
+      - name: Assemble plugin zip
+        run: |
+          mkdir -p out/flight-mode-prep/dist
+          cp plugin.json package.json main.py README.md LICENSE out/flight-mode-prep/
+          cp dist/index.js out/flight-mode-prep/dist/
+          cd out && zip -r flight-mode-prep.zip flight-mode-prep
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flight-mode-prep
+          path: out/flight-mode-prep.zip
+
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: out/flight-mode-prep.zip
+          generate_release_notes: true
