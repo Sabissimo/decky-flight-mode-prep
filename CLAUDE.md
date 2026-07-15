@@ -17,12 +17,21 @@ CI (`.github/workflows/build.yml`) runs the build + syntax check on push/PR, ass
 - `main.py` — backend, pure stdlib. Enumerates Steam libraries via `libraryfolders.vdf` (internal + SD card), parses `appmanifest_*.acf` for installed games and update state, reads battery from `/sys/class/power_supply/BAT*`, probes connectivity with a 2s TCP dial. Online-only titles are a curated appid list (`ONLINE_ONLY_APPIDS`).
 - `src/index.tsx` — the whole frontend (QAM panel).
 
-## Status and known risks
+## Status and Deck-runtime facts (run on real hardware, 2026-07-15)
 
-Never run on real hardware yet. Riskiest assumptions to verify on-Deck first:
+Runs and reports on the user's Deck. Facts — do not regress:
 
-- Update detection is a heuristic on ACF `StateFlags`/`BytesToDownload` — unverified against a real pending update.
-- Battery sysfs path naming on the Deck (`BAT0` vs `BAT1`).
+- Backend paths use `decky.DECKY_USER_HOME`, never `expanduser("~")` —
+  the wrong home made the library scan (and free-storage figure) come up
+  empty while looking successful.
+- `StateFlags` is a bitmask: bit 4 = fully installed, bit 2 = update
+  required. Never compare with `==`/`!=` — healthy installs carry
+  transient extra bits.
+- An empty scan renders an explicit "no games found" warning; a silent
+  zero is indistinguishable from success.
+
+Still unverified in the wild: update detection against a real pending
+update, and battery sysfs naming across Deck revisions (`BAT0`/`BAT1`).
 
 ## Releasing
 
