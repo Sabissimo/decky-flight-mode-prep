@@ -1,0 +1,11 @@
+{
+  "name": "Flight Mode Prep",
+  "author": "Sabissimo",
+  "flags": [],
+  "api_version": 1,
+  "publish": {
+    "tags": ["utility", "travel", "offline"],
+    "description": "One-tap preflight check before you go offline: battery level, free storage, games with pending updates, and games that won't work without internet.",
+    "image": "https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"
+  }
+}
