@@ -1,5 +1,5 @@
 {
-  "name": "flight-mode-prep",
+  "name": "decky-flight-mode-prep",
   "version": "0.1.0",
   "description": "One-tap preflight check for your Steam Deck: battery, storage, pending updates and online-only games before you go offline.",
   "type": "module",
