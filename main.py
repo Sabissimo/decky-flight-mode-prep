@@ -6,10 +6,20 @@ import socket
 
 import decky
 
-STEAM_ROOT = os.path.expanduser("~/.local/share/Steam")
+# The backend runs as root under Decky, so expanduser("~") is /root and
+# every library scan silently finds nothing. Decky provides the real home.
+USER_HOME = (
+    getattr(decky, "DECKY_USER_HOME", None)
+    or getattr(decky, "HOME", None)
+    or "/home/deck"
+)
+STEAM_ROOT = os.path.join(USER_HOME, ".local", "share", "Steam")
 
-# StateFlags value for a fully installed, up-to-date app
-FULLY_INSTALLED = 4
+# StateFlags is a BITMASK, not an enum: bit 4 = fully installed,
+# bit 2 = update required. Transient extra bits are normal on a healthy
+# install, so equality checks against 4 misflag ready games.
+STATE_FULLY_INSTALLED = 4
+STATE_UPDATE_REQUIRED = 2
 
 # Titles that require a connection even for solo play — flagged so they don't
 # end up as someone's only plan for a long flight.
@@ -64,7 +74,7 @@ def _battery():
 
 class Plugin:
     async def get_status(self):
-        disk = shutil.disk_usage(os.path.expanduser("~"))
+        disk = shutil.disk_usage(USER_HOME)
         online = True
         try:
             socket.create_connection(("1.1.1.1", 53), timeout=2).close()
@@ -95,7 +105,8 @@ class Plugin:
                 games.append({
                     "appid": appid,
                     "name": name,
-                    "update_pending": state != FULLY_INSTALLED
+                    "update_pending": not (state & STATE_FULLY_INSTALLED)
+                    or bool(state & STATE_UPDATE_REQUIRED)
                     or (to_download > 0 and downloaded < to_download),
                     "online_only": appid in ONLINE_ONLY_APPIDS,
                 })

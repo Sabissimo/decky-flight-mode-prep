@@ -113,7 +113,18 @@ function Content() {
         </PanelSection>
       )}
 
-      {games && (
+      {games && games.length === 0 && (
+        <PanelSection title="⚠ No games found">
+          <PanelSectionRow>
+            <div style={{ fontSize: "0.9em" }}>
+              The Steam library scan came back empty — that usually means the
+              scan failed, not that you own no games. Check
+              homebrew/logs/Flight Mode Prep on the Deck.
+            </div>
+          </PanelSectionRow>
+        </PanelSection>
+      )}
+      {games && games.length > 0 && (
         <PanelSection title="Ready to fly">
           <PanelSectionRow>
             <Field label="Games good to go">{ready.length}</Field>
